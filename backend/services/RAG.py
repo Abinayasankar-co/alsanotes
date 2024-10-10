@@ -4,8 +4,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import MongoDBAtlasVectorSearch
 import urllib.parse
 from  dotenv import load_dotenv
+from LLm import LLMConfig
 from pymongo import MongoClient
-from LLM import LLMConfig
 import os 
 
 load_dotenv()
