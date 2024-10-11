@@ -1,0 +1,83 @@
+/* General auth-container styling */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom right, #2a2a72, #009ffd);
+    padding: 20px;
+  }
+  
+  /* Glassy card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    width: 400px;
+  }
+  
+  /* Layer styles */
+  .logo-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
+  .back-to-website {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9em;
+  }
+  
+  .title-section h2 {
+    color: #fff;
+    font-size: 2rem;
+    text-align: center;
+  }
+  
+  .title-section p {
+    text-align: center;
+    color: #ddd;
+  }
+  
+  .form-section input {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+  }
+  
+  .form-check-label {
+    color: #fff;
+  }
+  
+  .button-section {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .btn-primary {
+    background-color: #5a67d8;
+    border: none;
+    width: 100%;
+  }
+  
+  .social-login-section {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .social-login-section p {
+    color: #fff;
+  }
+  
+  .social-buttons button {
+    margin: 5px;
+  }
+  
