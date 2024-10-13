@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import bcrypt
 import base64
 import urllib.parse
-import os
+from fastapi import HTTPException
 import datetime
 from PIL import Image
 from io import BytesIO
@@ -34,6 +34,7 @@ class dbhandles:
                "Organization": organization,
                "membership": None,
                "image": self.imagetobase64(imagepath),
+               "product":"ALSANotes",
                "created_at":datetime.datetime.now(),
                "updated_at":datetime.datetime.now(),
                }
@@ -43,6 +44,38 @@ class dbhandles:
         except Exception as e:
             print(e)
 
+    def forming_quizes(self,quiz_no:int,quiz_creator_name:str,quiz_questions:list,quiz_difficulty:str,quiz_duration:int,quiz_description:str,quiz_members : list, quize_active_participant: int):
+        try:
+            self.collections = self.database["ALSA_Quizes"]
+            document = {
+                "quiz_no": quiz_no,
+                "quiz_id": None,
+                "quiz_creator_name": quiz_creator_name,
+                "quiz_questions": quiz_questions,
+                "quiz_difficulty": quiz_difficulty,
+                "quiz_duration": quiz_duration,
+                "quiz_description":quiz_description,
+                "quiz_members": quiz_members,
+                "quiz_active_participant": quize_active_participant,
+                "created_at":datetime.datetime.now(),
+                "updated_at":datetime.datetime.now(),
+            }
+            form_quiz = self.collections.insert_one(document)
+            if form_quiz.acknowledged:
+               return 200
+        except  Exception as e:
+            return HTTPException(status_code=400,detail="Oops! Some Error Caused None Formation of Quizes")
+    
+    def get_quiz_partners(self,quiz_id:int):
+        try:
+            self.collections = self.database["ALSA_Quizes"]
+            find_quiz = self.collections.find_one({"quiz_id":quiz_id})
+            if find_quiz:
+                partners_list = find_quiz["quiz_members"]
+                return partners_list
+            return None
+        except Exception as e:
+            return HTTPException(status_code=400,detail="Oops! Some Error Caused ")
 
     def hash_password(self,password: str) -> str:
         try:

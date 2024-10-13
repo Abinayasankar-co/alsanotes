@@ -10,7 +10,6 @@ const InteractivePage = () => {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Prepare the data to send to the backend
     const data = {
       input: inputData,
