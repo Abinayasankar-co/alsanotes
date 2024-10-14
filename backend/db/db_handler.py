@@ -70,6 +70,10 @@ class dbhandles:
         except  Exception as e:
             print(e)
             return HTTPException(status_code=400,detail="Oops! Some Error Caused None Formation of Quizes.")
+    
+
+    def storing_user_history():
+        pass
             
     
     def get_quiz_partners(self,quiz_id:int)->list:

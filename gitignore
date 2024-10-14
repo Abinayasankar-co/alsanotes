@@ -21,6 +21,7 @@ cython_debug/
 .vscode/
 .idea/
 *.swp
+.venv/
 
 # Miscellaneous
 *.log
