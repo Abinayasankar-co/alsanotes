@@ -1,0 +1,65 @@
+# Python / FastAPI
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+Proj/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.env/
+*.env
+
+# Cython debug symbols
+cython_debug/
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+*.swp
+
+# Miscellaneous
+*.log
+*.sqlite3
+
+# React / Vite
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/patches
+.yarn/versions
+.pnp.*
+.pnp
+
+# NPM
+package-lock.json
+
+# Miscellaneous
+*.tgz
