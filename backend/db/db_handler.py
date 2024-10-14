@@ -86,7 +86,8 @@ class dbhandles:
                             "$push": {
                                 "active_quizes": find_quiz["quiz_id"]
                             }
-                        }
+                        },
+                        { 'upsert' :True }
                     )
                 return partners_list
             return None
@@ -98,7 +99,8 @@ class dbhandles:
           self.collections = self.database["ALSA_STORE_USERS"]
           self.collections.update_one(
              {'name':name},
-             {'$push':{ "ack_quiz_id" : quiz_id }}
+             {'$push':{ "ack_quiz_id" : quiz_id }},
+             { 'upsert' :True }
             )
         except Exception as e:
             print(e)
@@ -118,7 +120,9 @@ class dbhandles:
             self.collections = self.database["ALSA_Quizes"]
             self.collections.update_one(
                     {"quiz_id":quiz_id},
-                    {'$push': storage_value}
+                    {'$push': storage_value},
+                    { 'upsert' :True }
+
                 )
         except Exception as e:
             print(e)
