@@ -34,6 +34,8 @@ class dbhandles:
                "Organization": organization,
                "membership": None,
                "image": self.imagetobase64(imagepath),
+               "active_quizes":[],
+               "ack_quizes":[],
                "product":"ALSANotes",
                "created_at":datetime.datetime.now(),
                "updated_at":datetime.datetime.now(),
@@ -64,19 +66,46 @@ class dbhandles:
             if form_quiz.acknowledged:
                return 200
         except  Exception as e:
-            return HTTPException(status_code=400,detail="Oops! Some Error Caused None Formation of Quizes")
+            print(e)
+            return HTTPException(status_code=400,detail="Oops! Some Error Caused None Formation of Quizes.")
+            
     
-    def get_quiz_partners(self,quiz_id:int):
+    def get_quiz_partners(self,quiz_id:int)->list:
         try:
-            self.collections = self.database["ALSA_Quizes"]
-            find_quiz = self.collections.find_one({"quiz_id":quiz_id})
+            self.collections1 = self.database["ALSA_Quizes"]
+            self.collections2 = self.database["ALSA_STORE_USERS"]
+            find_quiz = self.collections1.find_one({"quiz_id":quiz_id})
             if find_quiz:
                 partners_list = find_quiz["quiz_members"]
+                for i in partners_list:
+                    self.collections2.update_one(
+                        {'name': i},
+                        {
+                            "$push": {
+                                "active_quizes": find_quiz["quiz_id"]
+                            }
+                        }
+                    )
                 return partners_list
             return None
         except Exception as e:
             return HTTPException(status_code=400,detail="Oops! Some Error Caused ")
-
+    
+    def ack_storage(self,name:str,quiz_id:int):
+        try:
+          self.collections = self.database["ALSA_STORE_USERS"]
+          self.collections.update_one(
+             {'name':name},
+             {
+                 '$push':{
+                     "ack_quiz_id" : quiz_id
+                 }
+             }
+            )
+        except Exception as e:
+            print(e)
+            return HTTPException(status_code=400,detail="The ack_user storage problem")
+    
     def hash_password(self,password: str) -> str:
         try:
             hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
