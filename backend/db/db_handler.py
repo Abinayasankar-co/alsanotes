@@ -59,6 +59,8 @@ class dbhandles:
                 "quiz_description":quiz_description,
                 "quiz_members": quiz_members,
                 "quiz_active_participant": quize_active_participant,
+                "quize_results":[],
+                "quize_scores":[],
                 "created_at":datetime.datetime.now(),
                 "updated_at":datetime.datetime.now(),
             }
@@ -96,16 +98,31 @@ class dbhandles:
           self.collections = self.database["ALSA_STORE_USERS"]
           self.collections.update_one(
              {'name':name},
-             {
-                 '$push':{
-                     "ack_quiz_id" : quiz_id
-                 }
-             }
+             {'$push':{ "ack_quiz_id" : quiz_id }}
             )
         except Exception as e:
             print(e)
             return HTTPException(status_code=400,detail="The ack_user storage problem")
     
+    def get_quiz_questions(self,quiz_id:int,quiz_creator_name:str):
+        try:
+            self.collections = self.database["ALSA_Quizes"]
+            find_quiz = self.collections.find_one({"quiz_id":quiz_id , 'quiz_creator_name': quiz_creator_name})
+            quiz_questions = find_quiz["quiz_questions"]
+            return quiz_questions
+        except Exception as e:
+            print(e) 
+
+    def store_quiz_value_db(self,storage_value:object,quiz_id:int):
+        try:
+            self.collections = self.database["ALSA_Quizes"]
+            self.collections.update_one(
+                    {"quiz_id":quiz_id},
+                    {'$push': storage_value}
+                )
+        except Exception as e:
+            print(e)
+
     def hash_password(self,password: str) -> str:
         try:
             hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())

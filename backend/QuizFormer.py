@@ -42,7 +42,25 @@ class QuizFormation:
         except:
            return HTTPException(status_code=400,detail="Error Occured will try again")
     
-    async def participate_quiz():
-       pass
-
+    async def participate_quiz(self,quiz_id:int,quiz_creator_name:str):
+        try:
+           questions = self.quizinfo.get_quiz_questions(quiz_id,quiz_creator_name)
+           return questions         
+        except Exception as e:
+           print(e)
     
+    async def quiz_value_storage(self,name:str,ans_value:list,quiz_id:int):
+        try:
+           store_ans = {
+            "name":name,
+            "ans": ans_value
+           }
+           self.quizinfo.store_quiz_value_db(store_ans,quiz_id)
+
+           
+        except Exception as e:
+           print(e)
+    
+
+
+
