@@ -180,15 +180,12 @@ class dbhandles:
             img_stream.seek(0)
             return img_stream
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error processing image: {e}")
-        
-
-    
+            raise HTTPException(status_code=500, detail=f"Error processing image: {e}") 
 
 def main():
     store_user = dbhandles()
     store_user.store_user(1,"Abi","abi@gmail.com","sankar@200504")
-
+    
 
 if __name__ == "__main__":
     main()
