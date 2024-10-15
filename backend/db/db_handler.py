@@ -38,7 +38,7 @@ class dbhandles:
                "ack_quizes":[],
                "product":"ALSANotes",
                "created_at":datetime.datetime.now(),
-               "updated_at":datetime.datetime.now(),
+               "updated_at":datetime.datetime.now()
                }
             insert_user = self.collections.insert_one(document)
             if insert_user.acknowledged:

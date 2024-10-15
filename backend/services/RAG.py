@@ -43,14 +43,14 @@ class VisualContent:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         self.chunks = text_splitter.split_text(self.text)  
 
-    def storing_vectors(self):
+    def storing_vectors(self,user_id:int,name:str):
         try:  
             embed_list = []
             if not self.chunks:
                 raise ValueError("No data available for embedding.")     
             for chunk in self.chunks:
                 embedded_text = self.embed_vector.llm_embedding(chunk)
-                embed_list.append({"chunk": chunk, "embedding": embedded_text})
+                embed_list.append({"user_id":user_id,"name":name,"chunk": chunk, "embedding": embedded_text})
             if embed_list:
                 self.collection.insert_many(embed_list)    
             return {"Db": "Embeddings have been successfully saved"} 
