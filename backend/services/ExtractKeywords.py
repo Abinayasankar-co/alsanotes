@@ -1,10 +1,14 @@
 import yake
+from db.db_handler import dbhandles
+
 
 class KeywordExtractor:
-    def  __init__(self, language:str,context:list):
+    def  __init__(self, language:str,context:list,user_id:str):
       self.language = language
       self.context  = context
+      self.user_id = user_id
       self.kw_extractor = yake.KeywordExtractor()
+      self.storevalue = dbhandles()
     
     def extract_context_keywords(self):
        # Extract keywords from the context using YAKE
@@ -21,11 +25,11 @@ class KeywordExtractor:
        mid = int(n/2)
 
        keywords_extracted = list(set(kw_list[:mid]))
-       
-       return keywords_extracted
-    
-    def storing_keywords_in_report():
-       pass
+       storing_db = self.storevalue.storing_user_history(keywords_extracted,self.user_id)
+       if storing_db == 200:
+          return keywords_extracted
+       else:
+          return 400
         
 
 

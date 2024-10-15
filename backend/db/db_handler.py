@@ -72,8 +72,21 @@ class dbhandles:
             return HTTPException(status_code=400,detail="Oops! Some Error Caused None Formation of Quizes.")
     
 
-    def storing_user_history():
-        pass
+    def storing_user_history(self,keyword_extraction:list,topic:str,user_id:int):
+        try:
+           self.collectionhistory =  self.database["ALSA_History"]
+           document = {
+               "user_id": user_id,
+               "topic":topic,
+               "Keywords":keyword_extraction
+           }
+           insert_one = self.collectionhistory.insert_one(document)
+           if insert_one.acknowledged:
+               return 200
+           else:
+               return 400
+        except Exception as e:
+            print(e)
             
     
     def get_quiz_partners(self,quiz_id:int)->list:
@@ -125,7 +138,7 @@ class dbhandles:
             self.collections.update_one(
                     {"quiz_id":quiz_id},
                     {'$push': storage_value},
-                    { 'upsert' :True }
+                    {'upsert' :True }
 
                 )
         except Exception as e:
