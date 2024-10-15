@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import MongoDBAtlasVectorSearch
 import urllib.parse
-from  dotenv import load_dotenv
+from dotenv import load_dotenv
 from LLm import LLMConfig
 from pymongo import MongoClient
 import os 

@@ -1,7 +1,6 @@
 import yake
 from db.db_handler import dbhandles
 
-
 class KeywordExtractor:
     def  __init__(self, language:str,context:list,user_id:str):
       self.language = language
