@@ -1,6 +1,6 @@
 def translator(transcribed_text:str , language_convertable:str)->str:
     TRANSLATOR_PROMPT = f""" 
-React Yourself as a translater . A sentence will be provided in English .The Input Given will be a streaming Input reduce the inputs by reducing the repeated words and provide only the content .
+React Yourself as a translater . A sentence will be provided in English. The Input Given will be a streaming Input reduce the inputs by reducing the repeated words and provide only the content .
 you must provide text in the language that have suggested as following . Here the suggested language is to be strictly followed.
 when you got to know about the language you should be well versed at the language and also save the grammer of the language for future references. Now you must convert the sentence bellow to the required language suggested
 The grammer of the language and meaningfulness of the sentence shouldn't get changed . 

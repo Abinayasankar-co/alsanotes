@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 from pptx import Presentation
 from pptx.util import Inches
+from pptx.action import ActionSetting
 
 class PowerPointGenerator:
     def __init__(self, json_data):
