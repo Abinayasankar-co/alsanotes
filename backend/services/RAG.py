@@ -2,6 +2,7 @@ from PyPDF2 import PdfReader
 from fastapi import HTTPException
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import MongoDBAtlasVectorSearch
+from pymongo.operations import SearchIndexModel
 import urllib.parse
 from dotenv import load_dotenv
 from LLm import LLMConfig
@@ -20,6 +21,12 @@ class VisualContent:
        self.pdf_docs = pdf_docs
        self.text = ""
        self.chunks = []
+
+    
+    def view_indexes(self):
+        cursor = self.collection.list_search_indexes()
+        for index in cursor:
+           print(index)
 
 
     
@@ -59,34 +66,49 @@ class VisualContent:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-    def query_results(self,query):
-        results = self.collection.aggregate([
-                        {
-                          "$vectorSearch": {
-                          "index": "ALSA_Vectors",
-                          "path": "embedding",
-                          "queryVector": self.embed_vector.llm_embedding(query),
-                          "numCandidates": 50,
-                          "limit": 5
-                        }
-                        }
-            ])
+    def query_results(self,query,name):
+        queryvector = self.embed_vector.llm_embedding(query)
+        results = self.collection.aggregate(
+            [
+    {
+        '$vectorSearch': {
+            'queryVector': queryvector,
+            'path': 'embedding', 
+            'numCandidates': 50, 
+            'index': 'ALSA_Vectors', 
+            'limit': 5
+        }
+    }, {
+        '$match': {
+            'user_id': 102
+        }
+    }
+]
+        )
+        
         for document in results:
             print(document)
 
 def main():
     try:
-      query = " Give only the Objective"
-      visualize = VisualContent(pdf_docs="../Output/TestingCopilot.pdf") 
-      if query:
-        visualize.query_results(query)
-      else:
-        visualize.get_pdf_text()
-        visualize.get_text_chunks()
-        result = visualize.storing_vectors()
-        print(result)
+      query = "what is this about"
+      name="sankar"
+      visualize = VisualContent(pdf_docs="../Output/SourceCode.pdf") 
+      visualize.get_pdf_text()
+      visualize.get_text_chunks()
+      result = visualize.storing_vectors(user_id=102,name="sankar")
+      result = visualize.query_results(query,name)
+      print(result)
     except Exception as e:
        raise HTTPException(status_code=404,detail=f"Hello {e}")
+
+def viewing_search():
+    try:
+        visualize = VisualContent(pdf_docs="")
+        visualize.view_indexes()
+    except Exception as e:
+        print(e)
+
 
 
 if __name__ == '__main__':
