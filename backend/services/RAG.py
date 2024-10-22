@@ -1,8 +1,6 @@
 from PyPDF2 import PdfReader
 from fastapi import HTTPException
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import MongoDBAtlasVectorSearch
-from pymongo.operations import SearchIndexModel
 import urllib.parse
 from dotenv import load_dotenv
 from LLm import LLMConfig
@@ -66,7 +64,7 @@ class VisualContent:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-    def query_results(self,query,name):
+    def query_results(self,query:str,user_id:int,name:str):
         queryvector = self.embed_vector.llm_embedding(query)
         results = self.collection.aggregate(
             [
@@ -80,7 +78,8 @@ class VisualContent:
         }
     }, {
         '$match': {
-            'user_id': 102
+            'user_id': user_id,
+            'name': name
         }
     }
 ]
@@ -92,24 +91,17 @@ class VisualContent:
 def main():
     try:
       query = "what is this about"
+      user_id=102
       name="sankar"
       visualize = VisualContent(pdf_docs="../Output/SourceCode.pdf") 
       visualize.get_pdf_text()
       visualize.get_text_chunks()
       result = visualize.storing_vectors(user_id=102,name="sankar")
-      result = visualize.query_results(query,name)
+      result = visualize.query_results(query,user_id,name)
+      visualize.view_indexes()
       print(result)
     except Exception as e:
        raise HTTPException(status_code=404,detail=f"Hello {e}")
-
-def viewing_search():
-    try:
-        visualize = VisualContent(pdf_docs="")
-        visualize.view_indexes()
-    except Exception as e:
-        print(e)
-
-
 
 if __name__ == '__main__':
     main()
