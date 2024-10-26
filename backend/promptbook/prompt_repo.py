@@ -17,3 +17,56 @@ The sentence to get converted is -  {transcribed_text}
 The language to be converted is - {language_convertable}
 """
     return TRANSLATOR_PROMPT
+
+def generate_ppt(context:list,categories:list,suggestions:str)->str:
+    PPT_GENERATE_INFO = f"""
+    {
+    "title": "Presentation Title",  
+    "slides": [
+        {
+            "title": "Slide Title 1", 
+            "content": [
+                {
+                    "text": "Content text here"  
+                }
+            ]
+        },
+        {
+            "title": "Slide with Table",  
+            "table_data": {
+                "headers": ["Column 1", "Column 2", "Column 3"],  
+                "rows": [
+                    ["Row 1, Col 1", "Row 1, Col 2", "Row 1, Col 3"],  
+                    ["Row 2, Col 1", "Row 2, Col 2", "Row 2, Col 3"]
+                ]
+            }
+        },
+        {
+            "title": "Slide with Bar Chart",  
+            "chart_type": "bar", 
+            "data": {
+                "Category 1": 0, 
+                "Category 2": 0,
+                "Category 3": 0
+            }
+        },
+        {
+            "title": "Slide with Pie Chart",  
+            "chart_type": "pie", 
+            "data": {
+                "Category A": 0,  
+                "Category B": 0,
+                "Category C": 0
+            }
+        }
+    ]
+   }'
+   Generate the Output in this standard json format.
+   Your a Professionalistic Designer where you can design and formulate various raw data into powerpoint.Here I will provide Three categories of 
+   input data  namely Content, Categories and Sugeestions.One is the Content which can make the body content and Other one is the Categories that are to be defined for making the PPT as a Suggestion and the Other are the Informations 
+   as Additional valuable inputs. All these inputs are provided in a form of list. so, process the list and provide the content for the ppt generation strictly as json object format mentioned above.
+   content - {context}
+   categories - {categories}
+   suggestions - {suggestions}
+   """
+    return PPT_GENERATE_INFO
