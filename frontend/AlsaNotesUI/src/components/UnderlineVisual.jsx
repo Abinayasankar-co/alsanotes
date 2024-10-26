@@ -1,3 +1,4 @@
+import { useState,useEffect } from "react";
 
 const UnderlineVisual = () =>{
     const [highlightStrings, setHighlightStrings] = useState([]); // to store strings to highlight
