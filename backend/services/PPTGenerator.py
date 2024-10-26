@@ -6,15 +6,16 @@ from pptx.util import Inches
 
 class PowerPointGenerator:
     def __init__(self, json_data):
-        self.data = json.loads(json_data)
+        self.data = json_data
         self.prs = Presentation()
 
     def create_presentation(self):
         # Create title slide
-        self._add_title_slide(self.data["title"])
+        self.datas = json.loads(self.data)
+        self._add_title_slide(self.datas["title"])
 
         # Create content slides
-        for slide_data in self.data["slides"]:
+        for slide_data in self.datas["slides"]:
             self._add_content_slide(slide_data)
 
         # Save the presentation

@@ -43,7 +43,7 @@ async def ppt_generator(ppt : PPTInput):
       categories = ppt.categories
       suggestions = ppt.suggestions
       prompt = generate_ppt(content,categories,suggestions)
-      generator = PowerPointGenerator(prompt)
+      generator = PowerPointGenerator(json_data=prompt)
       generator.create_presentation()
       return  {"message": "PPT generated successfully"}
     except Exception as e:
