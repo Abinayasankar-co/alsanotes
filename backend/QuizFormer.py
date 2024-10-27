@@ -19,6 +19,8 @@ class QuizFormation:
             )
         if creating_quiz == 200:
             return "Sucees! Quiz have been Created",200
+        else:
+           raise HTTPException(detail="Oops Error Occured while creating Quiz")
 
     async def acknowledge_partner(self,quiz_id):
         try:
@@ -34,10 +36,10 @@ class QuizFormation:
          if ack_value == "yes":
             if self.quizinfo.ack_storage(name,quiz_id):
                msg = "Quiz has been activated"
-               return msg
+               return msg,200
             else:
                 msg = "Something error Occured"
-                return msg
+                return msg,400
         except:
            return HTTPException(status_code=400,detail="Error Occured will try again")
     

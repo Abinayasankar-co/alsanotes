@@ -7,6 +7,7 @@ from services.LLm import LLMConfig
 from services.PPTGenerator import PowerPointGenerator
 from services.RAG import VisualContent
 from services.ExtractKeywords import KeywordExtractor
+from QuizFormer import QuizFormation
 
 
 app = FastAPI()
@@ -15,6 +16,11 @@ app = FastAPI()
 class Data(BaseModel):
     input: str
 
+class QuizAcknowledgmentInput(BaseModel):
+    ack_value: str = Form(...)
+    name:str = Form(...)
+    quiz_id:int = Form(...)
+
 class PPTInput(BaseModel):
     content : str = Form(...)
     categories : str  = Form(...)
@@ -22,6 +28,16 @@ class PPTInput(BaseModel):
 
 class KeywordExtractorInput(BaseModel):
     PdfInput : UploadFile = File(...)
+
+class QuizFormationInput(BaseModel):
+        quiz_no:int
+        quiz_creator_name:str
+        quiz_questions:list 
+        quiz_difficulty:str
+        quiz_duration:int 
+        quiz_description:str
+        quiz_members:list
+        quiz_active_participants:int
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,13 +57,35 @@ async def receive_data(data: Data):
     return {"message": f"Received input: {data.input}"}
 
 @app.post("/v1/create_quiz")
-async def create_quiz_main():
-    pass
-
+async def create_quiz_main(quizcreation : QuizFormationInput):
+    quizer = QuizFormation()
+    result , status_code = quizer.create_quiz(
+        quiz_no=quizcreation.quiz_no,
+        quiz_creator_name=quizcreation.quiz_creator_name,
+        quiz_questions=quizcreation.quiz_questions,
+        quiz_difficulty=quizcreation.quiz_difficulty,
+        quiz_duration=quizcreation.quiz_duration,
+        quiz_description=quizcreation.quiz_description,
+        quiz_members=quizcreation.quiz_members,
+        quiz_active_participants=quizcreation.quiz_active_participants    
+        ) 
+    if status_code == 200:
+        return {"message":result}
+    
 @app.post('/v1/aknowledge_quiz')
-async def aknowedge_quiz():
-    pass
-
+async def aknowledge_quiz(quizacknowledgement: QuizAcknowledgmentInput):
+    try:
+       quizer_ack = QuizFormation()
+       result, status_code = quizer_ack.partner_ack_quiz(ack_value=quizacknowledgement.ack_value,
+                                                      name=quizacknowledgement.name,
+                                                      quiz_id=quizacknowledgement.quiz_id)
+       if  status_code == 200:
+           return {"message":result}
+       else:
+           raise Exception
+    except Exception as e:
+        raise HTTPException(status_code=400,detail="Oops!,Erroor Occured")
+    
 @app.post('/v1/view_quizes')
 async def view_quizes_attended():
     pass
