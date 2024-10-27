@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import urllib.parse
 from dotenv import load_dotenv
-from LLm import LLMConfig
+from services.LLm import LLMConfig
 from pymongo import MongoClient
 import os 
 
@@ -47,16 +47,17 @@ class VisualContent:
 
     def get_text_chunks(self):
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-        self.chunks = text_splitter.split_text(self.text)  
+        self.chunks = text_splitter.split_text(self.text) 
+        return self.chunks
 
-    def storing_vectors(self,user_id:int,name:str):
+    def storing_vectors(self,user_id:int,name:str,title:str):
         try:  
             embed_list = []
             if not self.chunks:
                 raise ValueError("No data available for embedding.")     
             for chunk in self.chunks:
                 embedded_text = self.embed_vector.llm_embedding(chunk)
-                embed_list.append({"user_id":user_id,"name":name,"chunk": chunk, "embedding": embedded_text})
+                embed_list.append({"user_id":user_id,"name":name,"title":title,"chunk": chunk, "embedding": embedded_text})
             if embed_list:
                 self.collection.insert_many(embed_list)    
             return {"Db": "Embeddings have been successfully saved"} 

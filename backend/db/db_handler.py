@@ -6,7 +6,7 @@ import urllib.parse
 from fastapi import HTTPException
 import datetime
 from PIL import Image
-from CreatingTokens import create_Token
+from db.CreatingTokens import create_Token
 from io import BytesIO
 from fastapi import HTTPException
 

@@ -18,9 +18,12 @@ def create_Token(payload, algorithm="HS256"):
     return token
 
 # Example usage
+"""
 payload = {
     "user_id": 123,
     "username": "example_user"
 }
 token = create_Token(payload)
 print("Generated JWT:", token)
+
+"""
