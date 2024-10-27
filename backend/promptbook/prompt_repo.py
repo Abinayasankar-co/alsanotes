@@ -18,11 +18,12 @@ The language to be converted is - {language_convertable}
 """
     return TRANSLATOR_PROMPT
 
-def generate_ppt(context:list,categories:list,suggestions:str)->str:
-    PPT_GENERATE_INFO = f"""
-    {
-    "title": "Presentation Title",  
-    "slides": [
+def generate_ppt(context:str,categories:str,suggestions:str)->str:
+    try:
+     json_data = """
+   {
+     "title": "Presentation Title",  
+     "slides": [
         {
             "title": "Slide Title 1", 
             "content": [
@@ -59,14 +60,21 @@ def generate_ppt(context:list,categories:list,suggestions:str)->str:
                 "Category C": 0
             }
         }
-    ]
-   }'
-   Generate the Output in this standard json format.
-   Your a Professionalistic Designer where you can design and formulate various raw data into powerpoint.Here I will provide Three categories of 
-   input data  namely Content, Categories and Sugeestions.One is the Content which can make the body content and Other one is the Categories that are to be defined for making the PPT as a Suggestion and the Other are the Informations 
-   as Additional valuable inputs. All these inputs are provided in a form of list. so, process the list and provide the content for the ppt generation strictly as json object format mentioned above.
-   content - {context}
-   categories - {categories}
-   suggestions - {suggestions}
-   """
-    return PPT_GENERATE_INFO
+      ]
+      }
+     """
+     PPT_GENERATE_INFO = f"""
+     {json_data}
+     Generate the Output in this standard json format.
+       Your a Professionalistic Designer where you can design and formulate various raw data into powerpoint.Here I will provide Three categories of 
+      input data  namely Content, Categories and Sugeestions.One is the Content which can make the body content and Other one is the Categories that are to be defined for making the PPT as a Suggestion and the Other are the Informations 
+     as Additional valuable inputs. All these inputs are provided in a form of list. so, process the list and provide the content for the ppt generation strictly as json object format mentioned above.
+     content - {context}
+     categories - {categories}
+     suggestions - {suggestions}
+     Note: Provide Only the Json Very Imp Don't Provide any other answers or other suggestions to it.
+     """
+     print(PPT_GENERATE_INFO)
+     return PPT_GENERATE_INFO
+    except Exception as e:
+     print(e)

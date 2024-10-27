@@ -1,9 +1,9 @@
-import json
-from fastapi import FastAPI
+from fastapi import FastAPI,Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from promptbook.prompt_repo import generate_ppt
+from services.LLm import LLMConfig
 from services.PPTGenerator import PowerPointGenerator
 
 
@@ -14,9 +14,9 @@ class Data(BaseModel):
     input: str
 
 class PPTInput(BaseModel):
-    content : list
-    categories : list 
-    suggestions : str
+    content : str = Form(...)
+    categories : str  = Form(...)
+    suggestions : str = Form(...)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,14 +39,17 @@ async def receive_data(data: Data):
 @app.post("/v1/generate_ppt")
 async def ppt_generator(ppt : PPTInput):
     try:
+      LLM = LLMConfig()
       content = ppt.content
       categories = ppt.categories
       suggestions = ppt.suggestions
       prompt = generate_ppt(content,categories,suggestions)
-      generator = PowerPointGenerator(json_data=prompt)
-      generator.create_presentation()
+      result = LLM.llm_request(prompt)
+      print(result[0])
+      generator = PowerPointGenerator()
+      generator.create_presentation(result[0])
       return  {"message": "PPT generated successfully"}
     except Exception as e:
-        raise HTTPException(status_code=404,detail=f"Oops!Error Occured with status Code  404: {str(e)}")
+        raise HTTPException(status_code=404,detail=f"Oops!Error Occured with status Code 404: {str(e)}")
 
 

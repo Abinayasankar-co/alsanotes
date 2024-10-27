@@ -5,13 +5,12 @@ from pptx.util import Inches
 
 
 class PowerPointGenerator:
-    def __init__(self, json_data):
-        self.data = json_data
+    def __init__(self):
         self.prs = Presentation()
 
-    def create_presentation(self):
+    def create_presentation(self,data):
         # Create title slide
-        self.datas = json.loads(self.data)
+        self.datas = json.loads(data)
         self._add_title_slide(self.datas["title"])
 
         # Create content slides
@@ -19,7 +18,7 @@ class PowerPointGenerator:
             self._add_content_slide(slide_data)
 
         # Save the presentation
-        self.prs.save('/pptx/business_performance_presentation.pptx')
+        self.prs.save('/business_performance_presentation.pptx')
         print("PowerPoint with table, bar graph, and pie chart generated successfully!")
 
     def _add_title_slide(self, title_text):
@@ -101,6 +100,6 @@ class PowerPointGenerator:
 
 
 #Example Usage
-json_data = " "
-ppt_generator = PowerPointGenerator(json_data)
-ppt_generator.create_presentation()
+#json_data = " "
+#ppt_generator = PowerPointGenerator()
+#ppt_generator.create_presentation()
