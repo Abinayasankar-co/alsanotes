@@ -15,11 +15,10 @@ class QuizFormation:
             quiz_duration=quiz_duration, 
             quiz_description=quiz_description,
             quiz_members=quiz_members, 
-            quiz_active_participants=quiz_active_participants
-            
+            quiz_active_participants=quiz_active_participants   
             )
         if creating_quiz == 200:
-            return "Sucees! Quiz have been Created"
+            return "Sucees! Quiz have been Created",200
 
     async def acknowledge_partner(self,quiz_id):
         try:
@@ -56,7 +55,6 @@ class QuizFormation:
             "ans": ans_value
            }
            self.quizinfo.store_quiz_value_db(store_ans,quiz_id)
-
            
         except Exception as e:
            print(e)

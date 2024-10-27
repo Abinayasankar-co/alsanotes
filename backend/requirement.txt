@@ -1,7 +1,9 @@
 fastapi
 uvicorn
 pandas
+pptx
 scikit-learn
 pymongo
+tzlocal
 yake
 

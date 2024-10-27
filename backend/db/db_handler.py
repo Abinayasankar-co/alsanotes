@@ -6,6 +6,7 @@ import urllib.parse
 from fastapi import HTTPException
 import datetime
 from PIL import Image
+from CreatingTokens import create_Token
 from io import BytesIO
 from fastapi import HTTPException
 
@@ -37,6 +38,7 @@ class dbhandles:
                "active_quizes":[],
                "ack_quizes":[],
                "product":"ALSANotes",
+               "tokens":[],
                "created_at":datetime.datetime.now(),
                "updated_at":datetime.datetime.now()
                }
@@ -45,6 +47,20 @@ class dbhandles:
               print(f"Success : {insert_user.inserted_id}")
         except Exception as e:
             print(e)
+    
+    def creating_token(user_id:int,username:str)->str:
+        payload = {
+            "user_id":user_id,
+            "username":username
+        }
+        token = create_Token(payload)
+        if token:
+            return token
+        else:
+            return "NIL"
+    
+    def login():
+        pass
 
     def forming_quizes(self,quiz_no:int,quiz_creator_name:str,quiz_questions:list,quiz_difficulty:str,quiz_duration:int,quiz_description:str,quiz_members : list, quize_active_participant: int):
         try:

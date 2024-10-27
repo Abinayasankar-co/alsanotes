@@ -35,7 +35,6 @@ async def receive_data(data: Data):
     # Process the data as needed
     return {"message": f"Received input: {data.input}"}
 
-
 @app.post("/v1/generate_ppt")
 async def ppt_generator(ppt : PPTInput):
     try:
@@ -51,5 +50,7 @@ async def ppt_generator(ppt : PPTInput):
       return  {"message": "PPT generated successfully"}
     except Exception as e:
         raise HTTPException(status_code=404,detail=f"Oops!Error Occured with status Code 404: {str(e)}")
+
+
 
 
