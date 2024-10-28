@@ -22,7 +22,7 @@ class dbhandles:
         except Exception as e:
             print(1,e)
 
-    def store_user(self,userid:int,name:str,email:str,password:str,account_type:str,organization :str,imagepath: str):
+    def store_user(self,userid:int,name:str,email:str,password:str,account_type:str,organization :str):
         try:
             self.collections = self.database['ALSA_STORE_USERS']
             hashed_password = self.hash_password(password)
@@ -34,7 +34,6 @@ class dbhandles:
                "account_type":account_type,
                "Organization": organization,
                "membership": None,
-               "image": self.imagetobase64(imagepath),
                "active_quizes":[],
                "ack_quizes":[],
                "product":"ALSANotes",
@@ -44,7 +43,8 @@ class dbhandles:
                }
             insert_user = self.collections.insert_one(document)
             if insert_user.acknowledged:
-              print(f"Success : {insert_user.inserted_id}")
+              return {"Success": "The User Account is Succesfully Created", "statuscode": 200}
+             
         except Exception as e:
             print(e)
     
@@ -62,7 +62,7 @@ class dbhandles:
     def login():
         pass
 
-    def forming_quizes(self,quiz_no:int,quiz_creator_name:str,quiz_questions:list,quiz_difficulty:str,quiz_duration:int,quiz_description:str,quiz_members : list, quize_active_participant: int):
+    def forming_quizes(self,quiz_no:int,quiz_creator_name:str,quiz_questions:list,quiz_difficulty:str,quiz_duration:int,quiz_description:str,quiz_members : list, quiz_active_participants: int):
         try:
             self.collections = self.database["ALSA_Quizes"]
             document = {
@@ -74,7 +74,7 @@ class dbhandles:
                 "quiz_duration": quiz_duration,
                 "quiz_description":quiz_description,
                 "quiz_members": quiz_members,
-                "quiz_active_participant": quize_active_participant,
+                "quiz_active_participant": quiz_active_participants,
                 "quize_results":[],
                 "quize_scores":[],
                 "created_at":datetime.datetime.now(),
@@ -105,11 +105,11 @@ class dbhandles:
             print(e)
             
     
-    def get_quiz_partners(self,quiz_id:int)->list:
+    def get_quiz_partners(self,quiz_no:int)->list:
         try:
             self.collections1 = self.database["ALSA_Quizes"]
             self.collections2 = self.database["ALSA_STORE_USERS"]
-            find_quiz = self.collections1.find_one({"quiz_id":quiz_id})
+            find_quiz = self.collections1.find_one({"quiz_no":quiz_no})
             if find_quiz:
                 partners_list = find_quiz["quiz_members"]
                 for i in partners_list:
@@ -117,14 +117,14 @@ class dbhandles:
                         {'name': i},
                         {
                             "$push": {
-                                "active_quizes": find_quiz["quiz_id"]
+                                "active_quizes": find_quiz["quiz_no"]
                             }
-                        },
-                        { 'upsert' :True }
+                        }
                     )
-                return partners_list
-            return None
+                return partners_list,200
+            return "Nil",403
         except Exception as e:
+            print
             return HTTPException(status_code=400,detail="Oops! Some Error Caused ")
     
     def ack_storage(self,name:str,quiz_id:int):
@@ -133,7 +133,7 @@ class dbhandles:
           self.collections.update_one(
              {'name':name},
              {'$push':{ "ack_quiz_id" : quiz_id }},
-             { 'upsert' :True }
+             {'upserted':True}
             )
         except Exception as e:
             print(e)
@@ -159,6 +159,17 @@ class dbhandles:
                 )
         except Exception as e:
             print(e)
+    
+    def view_quizes(self,name):
+        result = [
+         {
+           '$match': {
+               'name': name
+            }
+         }
+        ]
+        for document in result:
+           print(document["active_quizes"])
 
     def hash_password(self,password: str) -> str:
         try:

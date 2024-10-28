@@ -1,6 +1,7 @@
 
 import './AuthPage.css';
 
+
 const LoginPage = () => {
   return (
     <div className="auth-container">

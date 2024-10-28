@@ -20,9 +20,9 @@ class QuizFormation:
         if creating_quiz == 200:
             return "Sucees! Quiz have been Created",200
         else:
-           raise HTTPException(detail="Oops Error Occured while creating Quiz")
+           raise HTTPException(status_code=500,detail="Oops Error Occured while creating Quiz")
 
-    async def acknowledge_partner(self,quiz_id):
+    def acknowledge_partner(self,quiz_id):
         try:
            partners = self.quizinfo.get_quiz_partners(quiz_id=quiz_id)
            if partners:
@@ -31,10 +31,10 @@ class QuizFormation:
         except Exception as e:
             print(e)
 
-    async def partner_ack_quiz(self,ack_value: str,name:str,quiz_id:int)->object:
+    def partner_ack_quiz(self,ack_value: str,name:str,quiz_no:int)->object:
         try:
          if ack_value == "yes":
-            if self.quizinfo.ack_storage(name,quiz_id):
+            if self.quizinfo.ack_storage(name,quiz_no):
                msg = "Quiz has been activated"
                return msg,200
             else:
@@ -43,14 +43,14 @@ class QuizFormation:
         except:
            return HTTPException(status_code=400,detail="Error Occured will try again")
     
-    async def participate_quiz(self,quiz_id:int,quiz_creator_name:str):
+    def participate_quiz(self,quiz_id:int,quiz_creator_name:str):
         try:
            questions = self.quizinfo.get_quiz_questions(quiz_id,quiz_creator_name)
            return questions         
         except Exception as e:
            print(e)
     
-    async def quiz_value_storage(self,name:str,ans_value:list,quiz_id:int):
+    def quiz_value_storage(self,name:str,ans_value:list,quiz_id:int):
         try:
            store_ans = {
             "name":name,

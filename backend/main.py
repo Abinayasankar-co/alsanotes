@@ -2,11 +2,13 @@ from fastapi import FastAPI,Form,File,UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
-from promptbook.prompt_repo import generate_ppt
+from typing import Optional
+from promptbook.prompt_repo import generate_ppt,translator
 from services.LLm import LLMConfig
 from services.PPTGenerator import PowerPointGenerator
 from services.RAG import VisualContent
 from services.ExtractKeywords import KeywordExtractor
+from db.db_handler import dbhandles
 from QuizFormer import QuizFormation
 
 
@@ -16,10 +18,23 @@ app = FastAPI()
 class Data(BaseModel):
     input: str
 
+class SignupInput(BaseModel):
+    user_id: int = Form(...)
+    name :str = Form(...)
+    email: str = Form(...)
+    password : str = Form(...)
+    account_type : str  = Form(...)
+    Organization : str  = Form(...)
+    membership : Optional[str] =None 
+
 class QuizAcknowledgmentInput(BaseModel):
     ack_value: str = Form(...)
     name:str = Form(...)
-    quiz_id:int = Form(...)
+    quiz_no:int = Form(...)
+
+class LanguageInput(BaseModel):
+    content : str = Form(...)
+    language : str =  Form(...)
 
 class PPTInput(BaseModel):
     content : str = Form(...)
@@ -39,6 +54,9 @@ class QuizFormationInput(BaseModel):
         quiz_members:list
         quiz_active_participants:int
 
+class RequestQuiz(BaseModel):
+    quiz_no:int = Form(...)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Specify the exact origin(s) you want to allow
@@ -56,6 +74,26 @@ async def receive_data(data: Data):
     # Process the data as needed
     return {"message": f"Received input: {data.input}"}
 
+#Signup into ALSANOTES
+@app.post("/v1/signup")
+async def signup(usersignup : SignupInput):
+    try:
+      db = dbhandles()
+      response = db.store_user(
+        userid=usersignup.user_id,
+        name=usersignup.name,
+        email=usersignup.email,
+        password=usersignup.password,
+        account_type= usersignup.account_type,
+        organization=usersignup.Organization,
+      )
+      print(response)
+      if response["statuscode"] ==  200:
+         return response
+    except Exception as e:
+        raise HTTPException(status_code=404,detail=f'Error Occured{e}')
+
+#Quiz Creation Pipelining
 @app.post("/v1/create_quiz")
 async def create_quiz_main(quizcreation : QuizFormationInput):
     quizer = QuizFormation()
@@ -71,14 +109,26 @@ async def create_quiz_main(quizcreation : QuizFormationInput):
         ) 
     if status_code == 200:
         return {"message":result}
-    
+
+#Accessing Quizes
+@app.post("/v1/check_quiz")
+async def create_quiz_intel(requestquiz:RequestQuiz):
+    try:
+     db = dbhandles()
+     response,statuscode = db.get_quiz_partners(quiz_no=requestquiz.quiz_no)
+     if statuscode == 200:
+         return {"message":response}
+    except Exception as e:
+        raise HTTPException(status_code=404,detail=f'Error Occured{e}')
+
+#Acknowledged Quiz
 @app.post('/v1/aknowledge_quiz')
-async def aknowledge_quiz(quizacknowledgement: QuizAcknowledgmentInput):
+def aknowledge_quiz(quizacknowledgement: QuizAcknowledgmentInput):
     try:
        quizer_ack = QuizFormation()
        result, status_code = quizer_ack.partner_ack_quiz(ack_value=quizacknowledgement.ack_value,
                                                       name=quizacknowledgement.name,
-                                                      quiz_id=quizacknowledgement.quiz_id)
+                                                      quiz_no=quizacknowledgement.quiz_no)
        if  status_code == 200:
            return {"message":result}
        else:
@@ -94,6 +144,21 @@ async def view_quizes_attended():
 async def view_quizes_notacknowledged():
     pass
 
+#Language Conversion Model Request
+@app.post("/v1/language_conversion")
+async def language_conversion(languageinputs : LanguageInput):
+    try:
+        lang_converter = LLMConfig()
+        prompt = translator(languageinputs.content,languageinputs.language)
+        result,status_code = lang_converter.llm_request(prompt)
+        if status_code == 200:
+            {"Result":result}
+        else:
+            raise Exception
+    except Exception as e:
+        raise HTTPException(status_code=403,detail=f"Oops{e}")
+
+#Keyword Extractor Pipielining 
 @app.post('/v1/keyword_extractor')
 async def keyword_visibility(user_id:int,KeywordExtract:KeywordExtractorInput)->object:
     try:
@@ -104,7 +169,8 @@ async def keyword_visibility(user_id:int,KeywordExtract:KeywordExtractorInput)->
         return  {"user_id":user_id,"TextFile":content,"Keywords":keywords}
     except Exception as e:
         return HTTPException(status_code=404,detail="Oops!We have encountered some Error:")
-    
+
+#Simpler Powerpoint Generation Pipelining  
 @app.post("/v1/generate_ppt")
 async def ppt_generator(ppt : PPTInput):
     try:
