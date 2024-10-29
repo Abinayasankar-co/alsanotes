@@ -127,12 +127,12 @@ class dbhandles:
             print
             return HTTPException(status_code=400,detail="Oops! Some Error Caused ")
     
-    def ack_storage(self,name:str,quiz_id:int):
+    def ack_storage(self,name:str,quiz_no:int):
         try:
           self.collections = self.database["ALSA_STORE_USERS"]
           self.collections.update_one(
              {'name':name},
-             {'$push':{ "ack_quiz_id" : quiz_id }},
+             {'$push':{ "ack_quizes" : quiz_no}},
              {'upserted':True}
             )
         except Exception as e:

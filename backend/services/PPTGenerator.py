@@ -18,7 +18,7 @@ class PowerPointGenerator:
             self._add_content_slide(slide_data)
 
         # Save the presentation
-        self.prs.save('/business_performance_presentation.pptx')
+        self.prs.save('./business_performance_presentation.pptx')
         print("PowerPoint with table, bar graph, and pie chart generated successfully!")
 
     def _add_title_slide(self, title_text):
@@ -28,7 +28,6 @@ class PowerPointGenerator:
         subtitle = slide.placeholders[1]
 
         title.text = title_text
-        subtitle.text = "Generated using Python"
 
     def _add_content_slide(self, slide_data):
         slide_layout = self.prs.slide_layouts[1]
