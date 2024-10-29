@@ -129,12 +129,12 @@ def aknowledge_quiz(quizacknowledgement: QuizAcknowledgmentInput):
        result, status_code = quizer_ack.partner_ack_quiz(ack_value=quizacknowledgement.ack_value,
                                                       name=quizacknowledgement.name,
                                                       quiz_no=quizacknowledgement.quiz_no)
-       if  status_code == 200:
+       if status_code == 200:
            return {"message":result}
        else:
            raise Exception
     except Exception as e:
-        raise HTTPException(status_code=400,detail="Oops!,Erroor Occured")
+        raise HTTPException(status_code=400,detail="Oops!,Error Occured")
     
 @app.post('/v1/view_quizes')
 async def view_quizes_attended():

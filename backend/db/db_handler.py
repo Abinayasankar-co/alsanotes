@@ -133,11 +133,12 @@ class dbhandles:
           self.collections.update_one(
              {'name':name},
              {'$push':{ "ack_quizes" : quiz_no}},
-             {'upserted':True}
+             upsert=True
             )
+          return 200
         except Exception as e:
             print(e)
-            return HTTPException(status_code=400,detail="The ack_user storage problem")
+            raise HTTPException(status_code=400,detail="The ack_user storage problem")
     
     def get_quiz_questions(self,quiz_id:int,quiz_creator_name:str):
         try:
