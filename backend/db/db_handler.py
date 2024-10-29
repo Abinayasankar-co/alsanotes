@@ -155,8 +155,7 @@ class dbhandles:
             self.collections.update_one(
                     {"quiz_id":quiz_id},
                     {'$push': storage_value},
-                    {'upsert' :True }
-
+                    upsert=True
                 )
         except Exception as e:
             print(e)
