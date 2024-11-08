@@ -1,11 +1,12 @@
-from PyPDF2 import PdfReader
 from fastapi import HTTPException
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import urllib.parse
+from io import BytesIO
 from dotenv import load_dotenv
 from services.LLm import LLMConfig
+from pdfminer.high_level import extract_text
 from pymongo import MongoClient
-import os 
+import magic
 
 load_dotenv()
 
@@ -13,7 +14,7 @@ load_dotenv()
 #as a Finalized Approach we are dedicated to perform RAG Fusion and Ranking algo for these chunks and customize Optimability of these Visual Content Product
 
 class VisualContent:
-    def __init__(self,pdf_docs:str) -> None:
+    def __init__(self,pdf_docs:bytes) -> None:
        self.encoded_username = urllib.parse.quote_plus('ALSA_LOGIN_MANAGER')
        self.encoded_password = urllib.parse.quote_plus('Abinay@200504')
        self.embed_vector = LLMConfig()
@@ -22,22 +23,28 @@ class VisualContent:
        self.pdf_docs = pdf_docs
        self.text = ""
        self.chunks = []
-
+    
+    def determine_file_type(self,pdf_docs)->str:
+        mime_type = magic.from_buffer(pdf_docs, mime=True)
+        print(mime_type)
+        return mime_type
     
     def view_indexes(self):
+        indexed = []
         cursor = self.collection.list_search_indexes()
         for index in cursor:
-           print(index)
+           indexed.append(index)
+        return indexed
    
     def get_pdf_text(self):
         try:
             if not self.pdf_docs or self.pdf_docs == ".":
                 raise ValueError("Invalid PDF file path provided.")
-            with open(self.pdf_docs, "rb") as pdf_file:
-                pdf_reader = PdfReader(pdf_file)
-                self.text = ""
-                for page in pdf_reader.pages:
-                    self.text += page.extract_text()
+            #elif self.determine_file_type(self.pdf_docs) == "application/pdf":
+            extracted_text = extract_text(BytesIO(self.pdf_docs))
+            print(extract_text + 'Hello')
+            self.text += extracted_text 
+            print(self.text)        
         except FileNotFoundError:
             raise HTTPException(status_code=404, detail=f"PDF file not found at: {self.pdf_docs}")     
         except PermissionError:
@@ -46,9 +53,12 @@ class VisualContent:
             raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
 
     def get_text_chunks(self):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-        self.chunks = text_splitter.split_text(self.text) 
-        return self.chunks
+        try:
+          text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+          self.chunks = text_splitter.split_text(self.text) 
+          return self.chunks
+        except  Exception as e:
+            raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
 
     def storing_vectors(self,user_id:int,name:str,title:str):
         try:  

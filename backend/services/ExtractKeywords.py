@@ -1,16 +1,19 @@
 import yake
 from db.db_handler import dbhandles
+from fastapi.exceptions import HTTPException
 
 class KeywordExtractor:
     def  __init__(self, language:str,context:list,user_id:str):
       self.language = language
-      self.context  = context
+      self.context  = context 
       self.user_id = user_id
       self.kw_extractor = yake.KeywordExtractor()
       self.storevalue = dbhandles()
     
     def extract_context_keywords(self):
       try:
+        if len(self.context) == 0:
+           raise HTTPException(status_code=400, detail="Context is empty")
         # Extract keywords from the context using YAKE
         kw_list = []
         sw_list  = []
@@ -30,8 +33,11 @@ class KeywordExtractor:
            return keywords_extracted
         else:
            return 400
+        
       except Exception as e:
          print(e)
+         raise HTTPException(status_code=500,detail="Error Occured")
+ 
 
 
 

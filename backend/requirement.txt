@@ -4,6 +4,7 @@ pandas
 python-pptx
 scikit-learn
 pymongo
+pdfminer.six ==20231228
 tzlocal
 yake
 

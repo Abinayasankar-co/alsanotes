@@ -21,8 +21,11 @@ The language to be converted is - {language_convertable}
 def generate_ppt(context:str,categories:str,suggestions:str)->str:
     try:
      json_data = """
-   {
-     "title": "Presentation Title",  
+    {
+     "title": "Presentation Title", 
+     "colors": {
+        "background": {"r", "g", "b"}
+     },
      "slides": [
         {
             "title": "Slide Title 1", 

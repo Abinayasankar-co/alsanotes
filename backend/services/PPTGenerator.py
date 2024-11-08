@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 from pptx import Presentation
 from pptx.util import Inches
+from pptx.dml.color import RGBColor
 
 
 class PowerPointGenerator:
@@ -20,13 +21,19 @@ class PowerPointGenerator:
         # Save the presentation
         self.prs.save('./business_performance_presentation.pptx')
         print("PowerPoint with table, bar graph, and pie chart generated successfully!")
+    
+    def set_background(self):
+        """Set a custom background color for a slide."""
+        r, g, b = self.datas["color"]["background"].values()
+        background = self.prs.slides.background
+        fill = background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(r, g, b)
 
     def _add_title_slide(self, title_text):
         title_slide_layout = self.prs.slide_layouts[0]
         slide = self.prs.slides.add_slide(title_slide_layout)
         title = slide.shapes.title
-        subtitle = slide.placeholders[1]
-
         title.text = title_text
 
     def _add_content_slide(self, slide_data):

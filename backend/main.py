@@ -2,6 +2,9 @@ from fastapi import FastAPI,Form,File,UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
+import json
+from io import BytesIO
+import base64
 from typing import Optional
 from promptbook.prompt_repo import generate_ppt,translator
 from services.LLm import LLMConfig
@@ -42,7 +45,7 @@ class PPTInput(BaseModel):
     suggestions : str = Form(...)
 
 class KeywordExtractorInput(BaseModel):
-    PdfInput : UploadFile = File(...)
+    PdfInput : bytes = File(...)
 
 class QuizFormationInput(BaseModel):
         quiz_no:int
@@ -160,15 +163,31 @@ async def language_conversion(languageinputs : LanguageInput):
 
 #Keyword Extractor Pipielining 
 @app.post('/v1/keyword_extractor')
-async def keyword_visibility(user_id:int,KeywordExtract:KeywordExtractorInput)->object:
+async def keyword_visibility(PdfInput : UploadFile = File(...)):
     try:
-        pdffile = KeywordExtract.PdfInput
+        user_id = 101
+        pdffile = await PdfInput.read()
+        content_type =  PdfInput.content_type
+        content = PdfInput.file
+        sizes = PdfInput.size
+        result = {"pdffile":pdffile,"Content Type":content_type,"content":content,"Size":sizes}
+        #file_bytes = await pdffile.read()
+        #file_base64 = base64.b64encode(file_bytes).decode("utf-8")
+        #print(file_base64)
+        #pdf_file = BytesIO(file_bytes)
+        #print(pdf_file)
         visualize = VisualContent(pdf_docs=pdffile)
-        content = visualize.chunks
-        keywords = KeywordExtractor(language="en-US",context=content,user_id=user_id)
-        return  {"user_id":user_id,"TextFile":content,"Keywords":keywords}
+        visualize.get_pdf_text()
+        content = visualize.get_text_chunks()
+        print(content)
+        #keywords = KeywordExtractor(language="en-US",context=content,user_id=user_id)
+        #return  {"user_id":user_id,"TextFile":content,"Keywords":keywords}
     except Exception as e:
-        return HTTPException(status_code=404,detail="Oops!We have encountered some Error:")
+        raise HTTPException(status_code=500,detail=f"Oops!We have encountered some Error:{e}")
+    except UnicodeDecodeError as e:
+        # Catch specific encoding errors and log more details
+        error_message = f"Error decoding file content: {str(e)}"
+        raise HTTPException(status_code=500, detail=error_message)
 
 #Simpler Powerpoint Generation Pipelining  
 @app.post("/v1/generate_ppt")
