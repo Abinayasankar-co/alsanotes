@@ -14,7 +14,7 @@ class LLMConfig:
         native_request = {
         "inputText": prompt,
         "textGenerationConfig": {
-          "maxTokenCount": 1024,
+          "maxTokenCount": 2000,
           "temperature": 0.5,
           },
         }

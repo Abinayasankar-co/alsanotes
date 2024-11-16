@@ -24,7 +24,7 @@ def generate_ppt(context:str,categories:str,suggestions:str)->str:
     {
      "title": "Presentation Title", 
      "colors": {
-        "background": {"r", "g", "b"}
+        "background": {"r":<Predict-value>, "g":<Predict-value>, "b":<Predict-Value>}
      },
      "slides": [
         {
@@ -33,7 +33,16 @@ def generate_ppt(context:str,categories:str,suggestions:str)->str:
                 {
                     "text": "Content text here"  
                 }
-            ]
+            ],
+            "imgdata": {
+                "imgprompt":"Write Suitable prompt for the image to be displayed",
+                "position": {
+                    "left": "<predict-left-1>",
+                    "top": "<predict-top-1>",
+                    "width": "<predict-width-1>",
+                    "height": "<predict-height-1>"
+            }
+        }
         },
         {
             "title": "Slide with Table",  
@@ -43,6 +52,14 @@ def generate_ppt(context:str,categories:str,suggestions:str)->str:
                     ["Row 1, Col 1", "Row 1, Col 2", "Row 1, Col 3"],  
                     ["Row 2, Col 1", "Row 2, Col 2", "Row 2, Col 3"]
                 ]
+            },
+            "imgdata": {
+                "imgprompt":"Write Suitable prompt for the image to be displayed",
+                "position": {
+                    "left": "<predict-left-1>",
+                    "top": "<predict-top-1>",
+                    "width": "<predict-width-1>",
+                    "height": "<predict-height-1>"
             }
         },
         {
@@ -69,15 +86,21 @@ def generate_ppt(context:str,categories:str,suggestions:str)->str:
      PPT_GENERATE_INFO = f"""
      {json_data}
      Generate the Output in this standard json format.
-       Your a Professionalistic Designer where you can design and formulate various raw data into powerpoint.Here I will provide Three categories of 
-      input data  namely Content, Categories and Sugeestions.One is the Content which can make the body content and Other one is the Categories that are to be defined for making the PPT as a Suggestion and the Other are the Informations 
-     as Additional valuable inputs. All these inputs are provided in a form of list. so, process the list and provide the content for the ppt generation strictly as json object format mentioned above.
+     Your a Professionalistic Designer where you can design and formulate various raw data into powerpoint.Here, I will provide Three categories of 
+     input data namely Content, Categories and Sugeestions.One is the Content which can make the body content and Other one is the Categories that are to be defined for making the PPT as a Suggestion and the Other are the Informations 
+     as Additional valuable inputs. All these inputs are provided in a form of list. so, process the list and provide the content for the ppt generation strictly as json object format mentioned above.Here given some Values for you to get predicted in the json provided.
+     You should specify the color gradient for those specified color backgorund and also you should write prompt for those images as per the template.
      content - {context}
      categories - {categories}
      suggestions - {suggestions}
-     Note: Provide Only the Json Very Imp Don't Provide any other answers or other suggestions to it.
+     Note: 1) Provide Only the Json Very Imp Don't Provide any other answers or other suggestions to it.
+           2) Avoid Piechat, barchat in json if there is no data for their generation because it should not be processed further
+           3) Give the json in the structured format so that no other characters /n can be entertained.
+           4) Avoid any other content generation other than the json format.
+           5) Follow the rules of the json format strictly.
+           6) The keys as mentioned in the format are to be followed strictly without any inconvience
+           7) Strictly follow the above instruction dont generate extra keys-value pairs and other structure of them inside output 
      """
-     print(PPT_GENERATE_INFO)
      return PPT_GENERATE_INFO
     except Exception as e:
      print(e)
