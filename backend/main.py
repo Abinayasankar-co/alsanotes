@@ -13,6 +13,8 @@ from services.RAG import VisualContent
 from services.ExtractKeywords import KeywordExtractor
 from db.db_handler import dbhandles
 from QuizFormer import QuizFormation
+from charset_normalizer import from_bytes
+import chardet
 
 
 app = FastAPI()
@@ -167,19 +169,33 @@ async def keyword_visibility(PdfInput : UploadFile = File(...)):
     try:
         user_id = 101
         pdffile = await PdfInput.read()
+        detected  = from_bytes(pdffile).best()
+        print(detected.encoding)
+        encoding = detected.encoding if detected and detected.encoding else 'utf-8'
         content_type =  PdfInput.content_type
+        decoded_content = pdffile.decode(encoding)
         content = PdfInput.file
         sizes = PdfInput.size
-        result = {"pdffile":pdffile,"Content Type":content_type,"content":content,"Size":sizes}
+        #result = {"pdffile":pdffile,"Content Type":content_type,"content":content,"Size":sizes}
+        result = {
+               "UserId":user_id,
+               "filename":PdfInput.filename,
+               "content":decoded_content,
+               "Content Type":content_type,
+               "content":content,
+               "Size":sizes
+               }
+        print(result)
+        return result
         #file_bytes = await pdffile.read()
         #file_base64 = base64.b64encode(file_bytes).decode("utf-8")
         #print(file_base64)
         #pdf_file = BytesIO(file_bytes)
         #print(pdf_file)
-        visualize = VisualContent(pdf_docs=pdffile)
-        visualize.get_pdf_text()
-        content = visualize.get_text_chunks()
-        print(content)
+        #visualize = VisualContent(pdf_docs=pdffile)
+        #visualize.get_pdf_text()
+        #content = visualize.get_text_chunks()
+        #print(content)
         #keywords = KeywordExtractor(language="en-US",context=content,user_id=user_id)
         #return  {"user_id":user_id,"TextFile":content,"Keywords":keywords}
     except Exception as e:

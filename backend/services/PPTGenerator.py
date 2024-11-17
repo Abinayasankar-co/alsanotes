@@ -4,7 +4,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from pptx import Presentation
 from pptx.util import Inches
-from ImageProcessing import StabilityAIClient
+from services.ImageProcessing import StabilityAIClient
 from pptx.dml.color import RGBColor
 from fastapi.exceptions import HTTPException
 
@@ -145,6 +145,7 @@ class PowerPointGenerator:
 
 
 #Example Usage
+"""
 json_data = """
 
 {
@@ -282,3 +283,7 @@ json_data = """
 """
 ppt_generator = PowerPointGenerator()
 ppt_generator.create_presentation(json_data)
+
+
+"""
+
